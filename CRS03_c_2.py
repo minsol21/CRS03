@@ -23,6 +23,8 @@ def plot_trajectories(original, plus, minus, times):
     plt.ylabel('Y Coordinate')
     plt.legend()
     plt.grid(True)
+    plt.savefig('robot_trajectories.png', format='png', dpi=300)  # Adjust dpi according to the quality you need
+    
     plt.show()
 
 # Call the function to plot trajectories
