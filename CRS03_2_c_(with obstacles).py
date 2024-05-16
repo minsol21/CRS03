@@ -1,6 +1,6 @@
 # Combining a random walk with a wall following can be used to ensure that the robot stays stuck at the wall
 # The current combination depends on the combination of randomness and collision avoidance but more systematic
-# approaches can be used such as grid patterns os spiral movements.
+# approaches can be used such as grid patterns or spiral movements.
 
 
 import pygame
