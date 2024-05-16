@@ -1,6 +1,8 @@
 import pygame
 import random
 import math
+import imageio 
+import os
 
 # Initialize pygame
 pygame.init()
@@ -12,6 +14,14 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 ROBOT_SIZE = 20
+FRAME_RATE = 30
+DURATION = 10  #duration of gif file (s)
+IMAGE_DIR = "images"
+
+# Check if the directory exists, if not create it
+if not os.path.exists(IMAGE_DIR):
+    os.makedirs(IMAGE_DIR)
+
 
 # Initialize the display
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -23,7 +33,7 @@ class Robot:
         self.x = x
         self.y = y
         self.angle = random.uniform(0, 2 * math.pi)
-        self.speed = 2
+        self.speed = 10
     
     def move(self):
         self.x += self.speed * math.cos(self.angle)
@@ -34,13 +44,14 @@ class Robot:
 
     def check_collision(self, walls):
         for wall in walls:
-            if wall.colliderect(self.x - ROBOT_SIZE, self.y - ROBOT_SIZE, ROBOT_SIZE * 2, ROBOT_SIZE * 2):
+            bumper_size=10
+            if wall.colliderect(self.x - (ROBOT_SIZE+bumper_size), self.y - (ROBOT_SIZE+bumper_size), (ROBOT_SIZE+bumper_size) * 2, (ROBOT_SIZE+bumper_size) * 2):
                 return True
         return False
 
     def avoid_collision(self, walls):
         if self.check_collision(walls):
-            self.angle += random.uniform(math.pi / 2, 3 * math.pi / 2)  # Turn a random angle between 90 and 270 degrees
+            self.angle += random.uniform(1.3 * math.pi / 2, 3.3 * math.pi / 2)  # Turn a random angle between 
 
 # Create walls and obstacles
 walls = [
@@ -60,9 +71,14 @@ obstacles = [
 # Initialize robot at a random position
 robot = Robot(random.randint(ROBOT_SIZE, WIDTH - ROBOT_SIZE), random.randint(ROBOT_SIZE, HEIGHT - ROBOT_SIZE))
 
+# Image saving for GIF
+images = []
+
 # Main loop
 running = True
 clock = pygame.time.Clock()
+frame_count = 0
+total_frames = FRAME_RATE * DURATION
 
 while running:
     for event in pygame.event.get():
@@ -82,7 +98,25 @@ while running:
     robot.move()
     robot.draw(screen)
 
+    # Save frame
+    if frame_count <= total_frames:
+        filename = os.path.join(IMAGE_DIR, f"frame_{frame_count}.jpg")
+        pygame.image.save(screen, filename)
+        images.append(filename)
+    else:
+        running = False #Stop the game after DURATION
+    
+    frame_count += 1
+
     pygame.display.flip()
-    clock.tick(30)
+    clock.tick(FRAME_RATE)
+
+# Convert to GIF
+imageio.mimsave('robot_arena.gif', [imageio.imread(image) for image in images], fps=FRAME_RATE)
+
+# Clean up individual frames
+for image in images:
+    os.remove(image)
 
 pygame.quit()
+
