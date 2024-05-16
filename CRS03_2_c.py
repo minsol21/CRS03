@@ -9,7 +9,7 @@ WIDTH, HEIGHT = 800, 600
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 CELL_SIZE = 20
-FPS = 30
+FPS = 60
 ROBOT_SIZE = 20
 
 # Initialize pygame
