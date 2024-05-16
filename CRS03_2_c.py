@@ -5,7 +5,7 @@ from robots import Robot  # Import the Robot class
 import math
 
 # Constants
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 800, 700
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 CELL_SIZE = 20
