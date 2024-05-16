@@ -19,7 +19,7 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 ROBOT_SIZE = 25
-FRAME_RATE = 30
+FRAME_RATE = 60
 DURATION = 10  # Duration of gif file (s)
 IMAGE_DIR = "images"
 
