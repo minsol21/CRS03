@@ -1,0 +1,137 @@
+import pygame
+import random
+import math
+import imageio
+import os
+
+# Initialize pygame
+pygame.init()
+
+# Constants
+WIDTH, HEIGHT = 800, 600
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+ROBOT_SIZE = 20
+FRAME_RATE = 30
+DURATION = 30  # Duration increased for comprehensive cleaning
+
+# Check if the directory exists, if not create it
+IMAGE_DIR = "images"
+if not os.path.exists(IMAGE_DIR):
+    os.makedirs(IMAGE_DIR)
+
+# Initialize the display
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Robot Arena")
+
+class Robot:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.angle = 0  # Initialize with a deterministic angle if using a sweeping pattern
+        self.speed = 20  # Reduced speed for more precise movement
+        
+
+    def move(self):
+        # Move in a straight line until an edge or obstacle is detected
+        self.x += self.speed * math.cos(self.angle)
+        self.y += self.speed * math.sin(self.angle)
+        self.x = max(ROBOT_SIZE, min(self.x, WIDTH - ROBOT_SIZE))
+        self.y = max(ROBOT_SIZE, min(self.y, HEIGHT - ROBOT_SIZE))
+
+    def draw(self, screen):
+        pygame.draw.circle(screen, BLUE, (int(self.x), int(self.y)), ROBOT_SIZE)
+
+    def check_collision(self, walls):
+        bumper_size=5
+        # Check for collision with walls or obstacles
+        for wall in walls:
+            if wall.colliderect(self.x - (ROBOT_SIZE + bumper_size), self.y - (ROBOT_SIZE + bumper_size), (ROBOT_SIZE + bumper_size) * 2, (ROBOT_SIZE + bumper_size) * 2):
+                return True
+        return False
+    
+    def avoid_collision(self, collidelist):
+        self.last_turn = random.choice([0,1,2]) * math.pi
+        
+        if self.check_collision(collidelist):
+            if self.last_turn == math.pi:
+                turn_angle = random.choice([1, 2]) * math.pi / 2 # Turn right or back or left
+                self.angle += turn_angle
+                self.last_turn = turn_angle
+
+            elif self.last_turn == 2 * math.pi:
+                turn_angle = random.choice([1, 3]) * math.pi / 2 # Turn right or back or left
+                self.angle += turn_angle
+                self.last_turn = turn_angle
+
+            elif self.last_turn == 3 * math.pi:
+                turn_angle = random.choice([1, 2]) * math.pi / 2
+                self.angle += turn_angle
+                self.last_turn = turn_angle
+
+            # Implement a smarter collision avoidance
+            
+            
+        
+        
+            
+            
+
+# Create walls and obstacles
+walls = [pygame.Rect(0, 0, WIDTH, 10), pygame.Rect(0, 0, 10, HEIGHT),
+         pygame.Rect(0, HEIGHT - 10, WIDTH, 10), pygame.Rect(WIDTH - 10, 0, 10, HEIGHT)]
+obstacles = [pygame.Rect(200, 150, 50, 50), pygame.Rect(400, 300, 100, 100), pygame.Rect(600, 450, 30, 30)]
+collidelist = walls + obstacles
+
+# Initialize robot at a random position
+robot = Robot(random.randint(ROBOT_SIZE, WIDTH - ROBOT_SIZE), random.randint(ROBOT_SIZE, HEIGHT - ROBOT_SIZE))
+
+# Image saving for GIF
+images = []
+
+# Main loop
+running = True
+clock = pygame.time.Clock()
+frame_count = 0
+total_frames = FRAME_RATE * DURATION
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    screen.fill(WHITE)
+
+    # Draw walls and obstacles
+    for wall in walls:
+        pygame.draw.rect(screen, BLACK, wall)
+    for obstacle in obstacles:
+        pygame.draw.rect(screen, RED, obstacle)
+
+    # Robot logic
+    robot.avoid_collision(collidelist)
+    robot.move()
+    robot.draw(screen)
+
+    # Save frame
+    if frame_count < total_frames:
+        filename = os.path.join(IMAGE_DIR, f"frame_{frame_count}.jpg")
+        pygame.image.save(screen, filename)
+        images.append(filename)
+    else:
+        running = False
+
+    frame_count += 1
+    pygame.display.flip()
+    clock.tick(FRAME_RATE)
+
+# Convert to GIF
+imageio.mimsave('robot_vacumn_cleaner.gif', [imageio.imread(image) for image in images], fps=FRAME_RATE)
+
+# Clean up individual frames
+for image in images:
+    os.remove(image)
+
+pygame.quit()
