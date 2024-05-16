@@ -15,7 +15,7 @@ class Environment:
         self.grid[:, 0] = 1
         self.grid[:, -1] = 1
 
-class Robot:
+class AutonomousRobot:
     def __init__(self, env):
         self.env = env
         self.position = self._get_random_position()
@@ -153,8 +153,8 @@ def draw_environment(screen, env, robot):
     pygame.display.flip()
 
 # Initialize environment and robot
-env = Environment(width=20, height=15)
-robot = Robot(env)
+env = Environment(width=20, height=15)        
+robot = AutonomousRobot(env)
 
 # Set up display
 screen = pygame.display.set_mode((env.width * CELL_SIZE, env.height * CELL_SIZE))
